@@ -31,8 +31,8 @@ func NewCounterTraffic(length int) *CounterTraffic {
 }
 
 func (c *CounterTraffic) Add() {
+	c.MiddleValue(float32(c.counter))
 	c.diary[c.index] = c.counter //set new element in our history of traffic
-	fmt.Println(c.diary)
 	c.Index()
 }
 
@@ -44,14 +44,13 @@ func (c *CounterTraffic) Index() {
 	}
 }
 
-// fix performance for this function
-func (c *CounterTraffic) MiddleValue() float32 {
-	middle := 0
-	for _, value := range c.diary {
-		middle += value
-	}
+func (c CounterTraffic) GetMiddleValue() float32 {
+	return c.middleValue
+}
 
-	return float32(middle) / float32(c.length)
+// max performance for average value
+func (c *CounterTraffic) MiddleValue(value float32) {
+	c.middleValue += (value - float32(c.diary[c.index])) / float32(c.length)
 }
 
 func (c *CounterTraffic) Counter() {
@@ -70,5 +69,5 @@ func (c *CounterTraffic) Expire() {
 	c.Add()
 	c.ResetCounter()
 
-	fmt.Println("average traffic", c.MiddleValue())
+	fmt.Println("average traffic", c.GetMiddleValue())
 }
